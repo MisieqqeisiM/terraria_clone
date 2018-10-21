@@ -3,102 +3,82 @@
 #include"Map.h"
 #include<iostream>
 #include"BasicShader.h"
-#include"TextureManager.h"
-#include"Player.h"
-sf::RenderWindow * window;
-BasicShader * shader;
-TextureManager * textureManager;
-Map * m;
-Player * entity;
-float deltaTime = 0;
-float camX=0, camY = 0;
-
-void setupGraphics(){
+int main(){
     sf::ContextSettings settings;
     settings.depthBits = 24;
     settings.antialiasingLevel = 4;
-    window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Template", sf::Style::Fullscreen, settings);
-
-
+    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "Template", sf::Style::Fullscreen, settings);
     glewExperimental = true;
     glewInit();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
 
-    shader = new BasicShader("Shaders/vertex_shader.vert", "Shaders/fragment_shader.frag");
-    shader->loadAspectRatio((float)window->getSize().y/window->getSize().x);
+    Map m;
 
-    textureManager = new TextureManager();
-    textureManager->loadTexture("Textures/tiles.bmp");
-    textureManager->loadTexture("Textures/player.bmp");
-}
-void setupMechanics(){
-    m = new Map();
-    entity = new Player(17,50);
 
-}
-void processInput(){
+    BasicShader shader("Shaders/vertex_shader.vert", "Shaders/fragment_shader.frag");
+    shader.loadAspectRatio((float)window.getSize().y/window.getSize().x);
+
+    sf::Image tile_texture;
+    if(!tile_texture.loadFromFile("Textures/tiles.bmp")){
+        std::cout<<"Couldnt load texture"<<std::endl;
+        return 1;
+    }
+    GLuint texture;
+    glGenTextures(1, &texture);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tile_texture.getSize().x, tile_texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, tile_texture.getPixelsPtr());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    sf::Clock clock;
+    int counter = 0;
+    float camX=0, camY =0;
+    while(window.isOpen()){
+
         sf::Event e;
-        while(window->pollEvent(e)){
+        while(window.pollEvent(e)){
             switch(e.type){
                 case sf::Event::Closed:
-                    window->close();
+                    window.close();
                     break;
                 default:
                     break;
             }
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
-            window->close();
-}
-void update(){
-    entity->update(*m, deltaTime, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A), sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D), sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space));
-}
-void cleanup(){
-
-    Entity::unload();
-    delete window;
-    delete shader;
-    delete textureManager;
-    delete m;
-    delete entity;
-
-}
-void draw(){
-        glClearColor(0.0f,0.0f,0.0f,1.0f);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)){
+            window.close();
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
+            camY+=0.01;
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
+            camY-=0.01;
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
+            camX+=0.01;
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
+            camX-=0.01;
+        }
+        glClearColor(0.3f,0.5f,1.0f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        shader->use();
-        shader->loadCameraPosition(entity->getX()+1.5f,entity->getY()+10.0f);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        shader.use();
+        shader.loadCameraPosition(camX,camY);
+        m.draw(shader);
+        window.display();
 
-        textureManager->useTexture(0);
-
-        m->drawFront(*shader, *textureManager);
-        entity->draw(*shader, *textureManager);
-        m->drawBack(*shader, *textureManager);
-
-        window->display();
-}
-int main(){
-    setupGraphics();
-    setupMechanics();
-    sf::Clock clock;
-    int counter = 0;
-
-    while(window->isOpen()){
-        processInput();
-        update();
-        draw();
-
-        deltaTime = clock.restart().asSeconds();
-        double fps = 1.0 / deltaTime;
+        float currentTime = clock.restart().asSeconds();
+        double fps = 1.0 / currentTime;
         if(counter++>100){
             //std::cout<<fps<<std::endl; //Display FPS
             counter = 0;
         }
     }
-    cleanup();
     return 0;
 }

@@ -10,13 +10,6 @@ BasicShader::BasicShader(const char*vertexPath, const char* fragmentPath){
     cam_y_uniform_location = glGetUniformLocation(programID, "cameraY");
     trans_x_uniform_location = glGetUniformLocation(programID, "translateX");
     trans_y_uniform_location = glGetUniformLocation(programID, "translateY");
-    scale_x_uniform_location = glGetUniformLocation(programID, "scaleX");
-    scale_y_uniform_location = glGetUniformLocation(programID, "scaleY");
-};
-void BasicShader::setScale(float x, float y){
-    use();
-    glUniform1f(scale_x_uniform_location, x);
-    glUniform1f(scale_y_uniform_location, y);
 };
 
 void BasicShader::loadCameraPosition(float x, float y){
