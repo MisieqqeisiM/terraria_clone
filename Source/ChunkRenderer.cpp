@@ -2,25 +2,26 @@
 #include"Constants.h"
 #include<GL/glew.h>
 #include<iostream>
+const int ATLAS_SIZE = 16;
 
 const float ChunkRenderer::TILE_VERTICES_FB[] = {
-    0.0f, 0.0f, 0.0f, 0.05f, 0.95f, 0.0f, 0.0f, -1.0f,
-    0.0f, 1.0f, 0.0f, 0.05f, 0.05f, 0.0f, 0.0f, -1.0f,
-    1.0f, 1.0f, 0.0f, 0.95f, 0.05f, 0.0f, 0.0f, -1.0f,
-    1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.0f, 0.0f, -1.0f
+    0.0f, 0.0f, 0.0f, 0.05f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 0.0f, 0.0f, -1.0f,
+    0.0f, 1.0f, 0.0f, 0.05f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 0.0f, 0.0f, -1.0f,
+    1.0f, 1.0f, 0.0f, 0.95f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 0.0f, 0.0f, -1.0f,
+    1.0f, 0.0f, 0.0f, 0.95f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 0.0f, 0.0f, -1.0f
 };
 
 const float ChunkRenderer::TILE_VERTICES_LR[] = {
-    0.0f, 0.0f, 0.0f, 0.05f, 0.95f, 1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 1.0f, 0.95f, 0.05f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.95f, 0.95f, 1.0f, 0.0f, 0.0f
+    0.0f, 0.0f, 0.0f, 0.05f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.05f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 1.0f, 0.95f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.95f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 1.0f, 0.0f, 0.0f
 };
 const float ChunkRenderer::TILE_VERTICES_UD[] = {
-    0.0f, 0.0f, 0.0f, 0.05f, 0.95f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.05f, 0.05f, 0.0f, 1.0f, 0.0f,
-    1.0f, 0.0f, 1.0f, 0.95f, 0.05f, 0.0f, 1.0f, 0.0f,
-    1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.0f, 1.0f, 0.0f
+    0.0f, 0.0f, 0.0f, 0.05f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.05f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 0.0f, 1.0f, 0.0f,
+    1.0f, 0.0f, 1.0f, 0.95f/ATLAS_SIZE, 0.05f/ATLAS_SIZE, 0.0f, 1.0f, 0.0f,
+    1.0f, 0.0f, 0.0f, 0.95f/ATLAS_SIZE, 0.95f/ATLAS_SIZE, 0.0f, 1.0f, 0.0f
 };
 const unsigned int ChunkRenderer::TILE_EDGES[] = {
     0, 2, 1,
@@ -200,8 +201,8 @@ void ChunkRenderer::createLRfaceInData(Tile tile, float * verticesData, unsigned
         verticesData[offset*TILE_VERTICES_SIZE + k*8] = TILE_VERTICES_LR[k*8]+x;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+1] = TILE_VERTICES_LR[k*8+1]+y;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+2] = TILE_VERTICES_LR[k*8+2];
-        verticesData[offset*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_LR[k*8+3]+5*(tile.id-1)/16;
-        verticesData[offset*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_LR[k*8+4]+(tile.id-1)%16;
+        verticesData[offset*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_LR[k*8+3]+(float)(5*(tile.id-1)/16)/ATLAS_SIZE;
+        verticesData[offset*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_LR[k*8+4]+(float)((tile.id-1)%16)/ATLAS_SIZE;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+5] = (flipped?-1:1)*TILE_VERTICES_LR[k*8+5];
         verticesData[offset*TILE_VERTICES_SIZE + k*8+6] = TILE_VERTICES_LR[k*8+6];
         verticesData[offset*TILE_VERTICES_SIZE + k*8+7] = TILE_VERTICES_LR[k*8+7];
@@ -221,8 +222,8 @@ void ChunkRenderer::createUDfaceInData(Tile tile, float * verticesData, unsigned
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8] = TILE_VERTICES_UD[k*8]+x;
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8+1] = TILE_VERTICES_UD[k*8+1]+y;
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8+2] = TILE_VERTICES_UD[k*8+2];
-        verticesData[(offset)*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_UD[k*8+3]+5*(tile.id-1)/16+3+flipped;
-        verticesData[(offset)*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_UD[k*8+4]+(tile.id-1)%16;
+        verticesData[(offset)*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_UD[k*8+3]+(float)(5*(tile.id-1)/16+3+flipped)/ATLAS_SIZE;
+        verticesData[(offset)*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_UD[k*8+4]+(float)((tile.id-1)%16)/ATLAS_SIZE;
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8+5] = TILE_VERTICES_UD[k*8+5];
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8+6] = (flipped?-1:1)*TILE_VERTICES_UD[k*8+6];
         verticesData[(offset)*TILE_VERTICES_SIZE + k*8+7] = TILE_VERTICES_UD[k*8+7];
@@ -240,8 +241,8 @@ void ChunkRenderer::createFrontFaceInData(Tile tile, float * verticesData, unsig
         verticesData[offset*TILE_VERTICES_SIZE + k*8] = TILE_VERTICES_FB[k*8]+x;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+1] = TILE_VERTICES_FB[k*8+1]+y;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+2] = TILE_VERTICES_FB[k*8+2]+flipped;
-        verticesData[offset*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_FB[k*8+3]+5*(tile.id-1)/16+1+flipped;
-        verticesData[offset*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_FB[k*8+4]+(tile.id-1)%16;
+        verticesData[offset*TILE_VERTICES_SIZE + k*8+3] = TILE_VERTICES_FB[k*8+3]+(float)(5*(tile.id-1)/16+1+flipped)/ATLAS_SIZE;
+        verticesData[offset*TILE_VERTICES_SIZE + k*8+4] = TILE_VERTICES_FB[k*8+4]+(float)((tile.id-1)%16)/ATLAS_SIZE;
         verticesData[offset*TILE_VERTICES_SIZE + k*8+5] = TILE_VERTICES_FB[k*8+5];
         verticesData[offset*TILE_VERTICES_SIZE + k*8+6] = TILE_VERTICES_FB[k*8+6];
         verticesData[offset*TILE_VERTICES_SIZE + k*8+7] = TILE_VERTICES_FB[k*8+7];
@@ -261,6 +262,7 @@ ChunkRenderer::~ChunkRenderer(){
 };
 void ChunkRenderer::drawWalls(int x, int y, BasicShader& shader){
     shader.use();
+    shader.setScale(1.0f,1.0f);
     shader.setTranslation(x*CHUNK_SIZE, y*CHUNK_SIZE);
     glBindVertexArray(walls_vao);
     glDrawElements(GL_TRIANGLES, walls_indicesCount, GL_UNSIGNED_INT, (GLvoid*) 0);
@@ -268,6 +270,7 @@ void ChunkRenderer::drawWalls(int x, int y, BasicShader& shader){
 };
 void ChunkRenderer::drawFront(int x, int y, BasicShader& shader){
     shader.use();
+    shader.setScale(1.0f,1.0f);
     shader.setTranslation(x*CHUNK_SIZE, y*CHUNK_SIZE);
     glBindVertexArray(front_vao);
     glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, (GLvoid*) 0);

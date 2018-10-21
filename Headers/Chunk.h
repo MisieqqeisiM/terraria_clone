@@ -11,6 +11,9 @@ class Chunk{
         void drawFront(BasicShader& shader);
         void drawWalls(BasicShader& shader);
         void setTile(int x, int y, Tile tile);
+        Tile getTile(int x, int y);
+        int getX();
+        int getY();
     private:
         Tile map[CHUNK_SIZE][CHUNK_SIZE];
         ChunkRenderer * renderer;
