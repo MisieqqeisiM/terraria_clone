@@ -9,9 +9,8 @@ class BasicShader: public ShaderProgram{
         void loadAspectRatio(float aspectRatio);
         void loadCameraPosition(float x, float y);
         void setTranslation(float x, float y);
-        void setScale(float x, float y);
     private:
-        int aspect_ratio_uniform_location, cam_x_uniform_location, cam_y_uniform_location, trans_x_uniform_location, trans_y_uniform_location, scale_x_uniform_location, scale_y_uniform_location;
+        int aspect_ratio_uniform_location, cam_x_uniform_location, cam_y_uniform_location, trans_x_uniform_location, trans_y_uniform_location;
 };
 
 #endif
