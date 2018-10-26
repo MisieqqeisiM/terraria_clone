@@ -6,15 +6,16 @@
 
 class Map{
     public:
-        Map();
+        Map(int width, int height);
         ~Map();
-        void drawBack(BasicShader& shader, TextureManager& textureManager);
-        void drawFront(BasicShader& shader, TextureManager& textureManager);
+        void drawBack(BasicShader& shader, TextureManager& textureManager, float camX, float camY);
+        void drawFront(BasicShader& shader, TextureManager& textureManager,float camX, float camY);
         bool isAir(float x, float y);
         Tile getTileAt(int x, int y);
         void setTile(int x, int y, Tile tile);
     private:
-        std::vector<Chunk *> activeChunks;
+        int width, height;
+        Chunk*** chunks;
         
 };
 #endif

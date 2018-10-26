@@ -12,8 +12,8 @@ uniform float translateX, translateY;
 uniform float cameraX, cameraY;
 uniform float scaleX, scaleY;
 void main(){
-    float zoom = 1.5;
-    float dist = 30;
+    float zoom = 1.3333;
+    float dist = 20;
     pass_TextureCoords = in_TextureCoords;
     pass_Normal = in_Normal;
     gl_Position = vec4(zoom*(scaleX*in_Position.x+translateX-cameraX)*aspectRatio, zoom*(scaleY*in_Position.y+translateY-cameraY), in_Position.z,dist+in_Position.z);

@@ -19,6 +19,6 @@ void Player::update(Map& map, float deltaTime, bool left, bool right, bool jump)
 
 
    if(jump&&!canMoveDown(map)){
-        verticalSpeed = -50.0f;
+        verticalSpeed = -35.0f;
    }
 };

@@ -36,7 +36,7 @@ void setupGraphics(){
     textureManager->loadTexture("Textures/player.bmp");
 }
 void setupMechanics(){
-    m = new Map();
+    m = new Map(50, 6);
     entity = new Player(17,50);
 
 }
@@ -53,9 +53,20 @@ void processInput(){
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
             window->close();
+        sf::Vector2i mousePosition = sf::Mouse::getPosition();
+        float mouseX = ((float)mousePosition.x-(float)window->getSize().x/2)/window->getSize().y*30+camX;
+        float mouseY = -((float)mousePosition.y-(float)window->getSize().y/2)/window->getSize().y*30+camY;
+
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+            m->setTile((int)std::floor(mouseX), (int)std::floor(mouseY), Tile{ORE});
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+            m->setTile((int)std::floor(mouseX), (int)std::floor(mouseY), Tile{AIR});
+
 }
 void update(){
     entity->update(*m, deltaTime, sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A), sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D), sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space));
+    camX = entity->getX()+1.5f;
+    camY = entity->getY()+5.0f;
 }
 void cleanup(){
 
@@ -71,13 +82,13 @@ void draw(){
         glClearColor(0.0f,0.0f,0.0f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         shader->use();
-        shader->loadCameraPosition(entity->getX()+1.5f,entity->getY()+10.0f);
+        shader->loadCameraPosition(camX,camY);
 
         textureManager->useTexture(0);
 
-        m->drawFront(*shader, *textureManager);
+        m->drawFront(*shader, *textureManager, camX, camY);
         entity->draw(*shader, *textureManager);
-        m->drawBack(*shader, *textureManager);
+        m->drawBack(*shader, *textureManager, camX, camY);
 
         window->display();
 }
@@ -95,7 +106,7 @@ int main(){
         deltaTime = clock.restart().asSeconds();
         double fps = 1.0 / deltaTime;
         if(counter++>100){
-            //std::cout<<fps<<std::endl; //Display FPS
+            std::cout<<fps<<std::endl; //Display FPS
             counter = 0;
         }
     }

@@ -13,7 +13,8 @@ Chunk::Chunk(Tile ** tiles, int x, int y){
     renderer = new ChunkRenderer(map);
 };
 Chunk::~Chunk(){
-    delete renderer;
+    if(renderer!=nullptr)
+        delete renderer;
 };
 void Chunk::setTile(int x, int y, Tile tile){
     map[x][y] = tile;
